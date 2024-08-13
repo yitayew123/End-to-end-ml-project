@@ -7,8 +7,8 @@ __version__ = "0.0.0"  # Define the version of the package
 
 # Define metadata for the package
 REPO_NAME = "End-to-end-ML-Project-Implementation"  # Name of the repository
-AUTHOR_USER_NAME = "yitayew"  # GitHub username of the author
-SRC_REPO = "mlProject"  # Name of the source repository
+AUTHOR_USER_NAME = "yitayew123"  # GitHub username of the author
+SRC_REPO = "mlproject"  # Name of the source repository
 AUTHOR_EMAIL = "yitayewsolomon3@gmail.com"  # Email of the author
 
 # Configure the setup function to provide package details

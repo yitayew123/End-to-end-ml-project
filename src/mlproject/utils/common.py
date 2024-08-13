@@ -1,153 +1,114 @@
-# Import the operating system interface module
-import os
-# Import BoxValueError exception from box library
-from box.exceptions import BoxValueError
-# Import yaml module to handle YAML files
-import yaml
-# Import the logger from the mlProject module
-from mlProject import logger
-# Import the JSON module to handle JSON files
-import json
-# Import the joblib module for saving and loading binary files
-import joblib
-# Import ensure_annotations decorator from ensure module for type checking
-from ensure import ensure_annotations
-# Import ConfigBox class from box module
-from box import ConfigBox
-# Import Path class from pathlib module for filesystem paths
-from pathlib import Path
-# Import Any type from typing module for type hints
-from typing import Any
+import os  # Import the OS module for interacting with the operating system
+from box.exceptions import BoxValueError  # Import BoxValueError exception from the box library
+import yaml  # Import YAML module to handle YAML files
+from mlproject import logger  # Import logger from the mlproject module
+import json  # Import JSON module to handle JSON files
+import joblib  # Import joblib for saving and loading binary files
+from ensure import ensure_annotations  # Import ensure_annotations to enforce type annotations
+from box import ConfigBox  # Import ConfigBox for handling dictionary-like objects with dot notation
+from pathlib import Path  # Import Path class from pathlib to handle file paths
+from typing import Any  # Import Any from typing module to allow any type in function arguments and return values
 
-# Function to read a YAML file and return its content as a ConfigBox
-@ensure_annotations
+@ensure_annotations  # Decorator to enforce type annotations
 def read_yaml(path_to_yaml: Path) -> ConfigBox:
-    """reads yaml file and returns
+    """Reads a YAML file and returns its content as a ConfigBox object.
 
     Args:
-        path_to_yaml (str): path like input
+        path_to_yaml (Path): Path to the YAML file.
 
     Raises:
-        ValueError: if yaml file is empty
-        e: empty file
+        ValueError: If the YAML file is empty.
+        Exception: If there is any other error while reading the file.
 
     Returns:
-        ConfigBox: ConfigBox type
+        ConfigBox: Parsed content of the YAML file as a ConfigBox object.
     """
     try:
-        # Open the YAML file
-        with open(path_to_yaml) as yaml_file:
-            # Load the content of the YAML file
-            content = yaml.safe_load(yaml_file)
-            # Log the successful loading of the YAML file
-            logger.info(f"yaml file: {path_to_yaml} loaded successfully")
-            # Return the content as a ConfigBox object
-            return ConfigBox(content)
-    except BoxValueError:
-        # Raise ValueError if the YAML file is empty
-        raise ValueError("yaml file is empty")
-    except Exception as e:
-        # Raise any other exceptions
-        raise e
+        with open(path_to_yaml) as yaml_file:  # Open the YAML file
+            content = yaml.safe_load(yaml_file)  # Load the content using safe_load
+            logger.info(f"yaml file: {path_to_yaml} loaded successfully")  # Log success message
+            return ConfigBox(content)  # Return content as a ConfigBox object
+    except BoxValueError:  # Catch specific BoxValueError if the file is empty
+        raise ValueError("yaml file is empty")  # Raise a ValueError with a custom message
+    except Exception as e:  # Catch all other exceptions
+        raise e  # Raise the caught exception
 
-# Function to create directories from a list of paths
-@ensure_annotations
+@ensure_annotations  # Decorator to enforce type annotations
 def create_directories(path_to_directories: list, verbose=True):
-    """create list of directories
+    """Creates a list of directories.
 
     Args:
-        path_to_directories (list): list of path of directories
-        ignore_log (bool, optional): ignore if multiple dirs is to be created. Defaults to False.
+        path_to_directories (list): List of directory paths to create.
+        verbose (bool, optional): If True, log a message for each created directory. Defaults to True.
     """
-    # Iterate over the list of directory paths
-    for path in path_to_directories:
-        # Create directories, do not raise an error if they already exist
-        os.makedirs(path, exist_ok=True)
-        # Log the creation of each directory if verbose is True
-        if verbose:
-            logger.info(f"created directory at: {path}")
+    for path in path_to_directories:  # Loop through each path in the list
+        os.makedirs(path, exist_ok=True)  # Create directory, do nothing if it already exists
+        if verbose:  # If verbose is True
+            logger.info(f"created directory at: {path}")  # Log the directory creation
 
-# Function to save data to a JSON file
-@ensure_annotations
+@ensure_annotations  # Decorator to enforce type annotations
 def save_json(path: Path, data: dict):
-    """save json data
+    """Saves a dictionary as a JSON file.
 
     Args:
-        path (Path): path to json file
-        data (dict): data to be saved in json file
+        path (Path): Path to the JSON file.
+        data (dict): Dictionary data to be saved in the JSON file.
     """
-    # Open the JSON file in write mode
-    with open(path, "w") as f:
-        # Dump the data into the JSON file with indentation
-        json.dump(data, f, indent=4)
-    # Log the successful saving of the JSON file
-    logger.info(f"json file saved at: {path}")
+    with open(path, "w") as f:  # Open the file for writing
+        json.dump(data, f, indent=4)  # Dump the dictionary into the file with indentation
 
-# Function to load data from a JSON file and return as a ConfigBox
-@ensure_annotations
+    logger.info(f"json file saved at: {path}")  # Log the file save location
+
+@ensure_annotations  # Decorator to enforce type annotations
 def load_json(path: Path) -> ConfigBox:
-    """load json files data
+    """Loads data from a JSON file.
 
     Args:
-        path (Path): path to json file
+        path (Path): Path to the JSON file.
 
     Returns:
-        ConfigBox: data as class attributes instead of dict
+        ConfigBox: Data loaded from the JSON file as a ConfigBox object.
     """
-    # Open the JSON file
-    with open(path) as f:
-        # Load the content of the JSON file
-        content = json.load(f)
-    # Log the successful loading of the JSON file
-    logger.info(f"json file loaded succesfully from: {path}")
-    # Return the content as a ConfigBox object
-    return ConfigBox(content)
+    with open(path) as f:  # Open the JSON file for reading
+        content = json.load(f)  # Load the content of the file
 
-# Function to save data to a binary file
-@ensure_annotations
+    logger.info(f"json file loaded successfully from: {path}")  # Log successful load
+    return ConfigBox(content)  # Return the content as a ConfigBox object
+
+@ensure_annotations  # Decorator to enforce type annotations
 def save_bin(data: Any, path: Path):
-    """save binary file
+    """Saves data as a binary file.
 
     Args:
-        data (Any): data to be saved as binary
-        path (Path): path to binary file
+        data (Any): Data to be saved in binary format.
+        path (Path): Path to the binary file.
     """
-    # Dump the data into the binary file
-    joblib.dump(value=data, filename=path)
-    # Log the successful saving of the binary file
-    logger.info(f"binary file saved at: {path}")
+    joblib.dump(value=data, filename=path)  # Dump the data as a binary file using joblib
+    logger.info(f"binary file saved at: {path}")  # Log the file save location
 
-# Function to load data from a binary file
-@ensure_annotations
+@ensure_annotations  # Decorator to enforce type annotations
 def load_bin(path: Path) -> Any:
-    """load binary data
+    """Loads binary data from a file.
 
     Args:
-        path (Path): path to binary file
+        path (Path): Path to the binary file.
 
     Returns:
-        Any: object stored in the file
+        Any: Data loaded from the binary file.
     """
-    # Load the data from the binary file
-    data = joblib.load(path)
-    # Log the successful loading of the binary file
-    logger.info(f"binary file loaded from: {path}")
-    # Return the loaded data
-    return data
+    data = joblib.load(path)  # Load the binary data using joblib
+    logger.info(f"binary file loaded from: {path}")  # Log successful load
+    return data  # Return the loaded data
 
-# Function to get the size of a file in KB
-@ensure_annotations
+@ensure_annotations  # Decorator to enforce type annotations
 def get_size(path: Path) -> str:
-    """get size in KB
+    """Gets the size of a file in KB.
 
     Args:
-        path (Path): path of the file
+        path (Path): Path to the file.
 
     Returns:
-        str: size in KB
+        str: Size of the file in KB as a string.
     """
-    # Get the size of the file in bytes and convert to KB
-    size_in_kb = round(os.path.getsize(path) / 1024)
-    # Return the size in KB as a string
-    return f"~ {size_in_kb} KB"
-
+    size_in_kb = round(os.path.getsize(path) / 1024)  # Get the file size in KB
+    return f"~ {size_in_kb} KB"  # Return the size as a formatted string
